@@ -4,10 +4,10 @@ import { ShieldCheck, MapPin, Phone, MessageSquare, ChevronRight, X } from 'luci
 import logo from '../assets/logo.svg';
 
 const TRACK_STEPS = [
-  { status: 'placed', label: 'Order Placed', time: '11:35 AM', desc: "We've received your order." },
   { status: 'confirmed', label: 'Order Confirmed', time: '11:37 AM', desc: 'Restaurant has accepted your order.' },
-  { status: 'preparing', label: 'Preparing', time: '11:42 AM', desc: 'Chef Vinay is preparing your heavenly meal.' },
-  { status: 'delivery', label: 'Out for Delivery', time: '11:52 AM', desc: 'Rider is on the way to your location.' },
+  { status: 'preparing', label: 'Restaurant Preparing', time: '11:42 AM', desc: 'Chef is preparing your heavenly meal.' },
+  { status: 'picked_up', label: 'Picked Up', time: '11:48 AM', desc: 'Rider has picked up your order.' },
+  { status: 'on_the_way', label: 'On the Way', time: '11:52 AM', desc: 'Rider is on the way to your location.' },
   { status: 'delivered', label: 'Delivered', time: '12:02 PM', desc: 'Enjoy your heavenly meal!' }
 ];
 
@@ -15,8 +15,26 @@ const TrackOrder = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(0);
+  const [orderDetails, setOrderDetails] = useState(null);
 
   useEffect(() => {
+    // Fetch real order details from SQLite backend
+    const fetchOrder = async () => {
+      try {
+        const res = await fetch(`http://localhost:5000/api/orders/${orderId}`);
+        const data = await res.json();
+        if (data.status === 'success') {
+          setOrderDetails(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch order", err);
+      }
+    };
+    
+    if (orderId) {
+      fetchOrder();
+    }
+
     // Automatically advance order stage step every 12 seconds for simulation
     const interval = setInterval(() => {
       setCurrentStep((prevStep) => {
@@ -29,7 +47,7 @@ const TrackOrder = () => {
     }, 12000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [orderId]);
 
   return (
     <div className="track-order fade-in" style={{ padding: '16px', position: 'relative', display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -37,7 +55,7 @@ const TrackOrder = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <div>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Order ID: #{orderId || '729104'}</span>
-          <h3 style={{ fontSize: '1.2rem', fontWeight: '800', marginTop: '2px' }}>Simulated Live Tracking</h3>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: '800', marginTop: '2px' }}>Live Tracking</h3>
         </div>
         <button 
           onClick={() => navigate('/')}
@@ -46,6 +64,27 @@ const TrackOrder = () => {
           <X size={18} />
         </button>
       </div>
+
+      {orderDetails && (
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '12px', 
+          marginBottom: '20px',
+          padding: '12px',
+          backgroundColor: 'var(--bg-card)',
+          borderRadius: '12px',
+          border: '1px solid var(--border-color)'
+        }}>
+          {orderDetails.restaurant?.image_url && (
+            <img src={orderDetails.restaurant.image_url} alt="Restaurant" style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'cover' }} />
+          )}
+          <div>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: '700' }}>{orderDetails.restaurant?.name || 'Restaurant'}</h4>
+            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Total: ₹{orderDetails.total_amount} • {orderDetails.payment_method}</p>
+          </div>
+        </div>
+      )}
 
       {/* ETA block */}
       <div style={{ 

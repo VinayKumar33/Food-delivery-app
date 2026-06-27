@@ -11,6 +11,13 @@ import Search from './pages/Search';
 import Orders from './pages/Orders';
 import BottomNavigation from './components/Layout/BottomNavigation';
 import SplashScreen from './components/Common/SplashScreen';
+import ProtectedRoute from './components/Common/ProtectedRoute';
+import DashboardLayout from './pages/Dashboard/DashboardLayout';
+import Overview from './pages/Dashboard/Overview';
+import OrdersManager from './pages/Dashboard/OrdersManager';
+import MenuManager from './pages/Dashboard/MenuManager';
+import ProfileManager from './pages/Dashboard/ProfileManager';
+import Reviews from './pages/Dashboard/Reviews';
 
 // App Inner wrapper to conditionally show navigation and style wrapper
 const AppContentWrapper = () => {
@@ -28,8 +35,8 @@ const AppContentWrapper = () => {
     setShowSplash(false);
   };
 
-  // Hide bottom tab bar on auth, checkout, and tracking screens for full-screen focus
-  const hideNavBar = path.startsWith('/login') || path.startsWith('/track') || path.startsWith('/checkout');
+  // Hide bottom tab bar on auth, checkout, tracking, and dashboard screens
+  const hideNavBar = path.startsWith('/login') || path.startsWith('/track') || path.startsWith('/checkout') || path.startsWith('/dashboard');
 
   return (
     <div className="desktop-wrapper">
@@ -46,6 +53,22 @@ const AppContentWrapper = () => {
             <Route path="/track/:orderId" element={<TrackOrder />} />
             <Route path="/search" element={<Search />} />
             <Route path="/orders" element={<Orders />} />
+
+            {/* Restaurant Dashboard Routes */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute allowedRoles={['restaurant']}>
+                  <DashboardLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Overview />} />
+              <Route path="orders" element={<OrdersManager />} />
+              <Route path="menu" element={<MenuManager />} />
+              <Route path="profile" element={<ProfileManager />} />
+              <Route path="reviews" element={<Reviews />} />
+            </Route>
           </Routes>
         </div>
         {!hideNavBar && <BottomNavigation />}

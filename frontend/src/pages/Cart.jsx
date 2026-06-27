@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ShoppingBag, Trash2, MapPin, ChevronRight, Plus, Minus, FileText } from 'lucide-react';
 import { useCart } from '../context/CartContext';
@@ -8,17 +8,36 @@ const Cart = () => {
   const navigate = useNavigate();
   const { cartItems, cartRestaurant, updateQuantity, clearCart, getCartTotal } = useCart();
   const { user } = useAuth();
+  
+  const [couponCode, setCouponCode] = useState('');
+  const [appliedDiscount, setAppliedDiscount] = useState(0);
+  const [couponError, setCouponError] = useState('');
+  const [couponSuccess, setCouponSuccess] = useState('');
 
   const itemTotal = getCartTotal();
   const gst = Math.round(itemTotal * 0.05); // 5% GST
   const deliveryCharge = itemTotal > 0 ? 30 : 0;
-  const totalBill = itemTotal + gst + deliveryCharge;
+  const originalBill = itemTotal + gst + deliveryCharge;
+  const totalBill = originalBill - appliedDiscount;
+
+  const handleApplyCoupon = () => {
+    if (couponCode.toUpperCase() === 'HEAVEN50') {
+      const discount = Math.round(itemTotal * 0.5);
+      setAppliedDiscount(discount);
+      setCouponSuccess(`HEAVEN50 applied! You saved ₹${discount}`);
+      setCouponError('');
+    } else {
+      setCouponError('Invalid coupon code. Try HEAVEN50');
+      setCouponSuccess('');
+      setAppliedDiscount(0);
+    }
+  };
 
   const handleCheckout = () => {
     if (!user) {
       navigate('/login?redirect=checkout');
     } else {
-      navigate('/checkout');
+      navigate('/checkout', { state: { appliedDiscount } });
     }
   };
 
@@ -169,6 +188,46 @@ const Cart = () => {
         />
       </div>
 
+      {/* Coupon section */}
+      <div style={{ 
+        backgroundColor: 'var(--bg-card)', 
+        borderRadius: '16px', 
+        border: '1px solid var(--border-color)',
+        padding: '16px',
+        marginBottom: '20px',
+        boxShadow: 'var(--shadow-sm)'
+      }}>
+        <h4 style={{ fontSize: '0.9rem', fontWeight: '700', marginBottom: '10px' }}>Offers & Promo Codes</h4>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <input 
+            type="text" 
+            placeholder="Enter coupon (HEAVEN50)" 
+            value={couponCode}
+            onChange={(e) => setCouponCode(e.target.value)}
+            style={{ 
+              flex: 1,
+              padding: '10px 14px',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              background: 'var(--bg-surface)',
+              color: 'var(--text-main)',
+              fontFamily: 'var(--font-family)',
+              fontSize: '0.85rem',
+              outline: 'none'
+            }}
+          />
+          <button 
+            onClick={handleApplyCoupon}
+            className="btn btn-primary"
+            style={{ padding: '0 16px', height: '38px', borderRadius: '8px', fontSize: '0.85rem' }}
+          >
+            Apply
+          </button>
+        </div>
+        {couponError && <p style={{ color: 'var(--error)', fontSize: '0.75rem', marginTop: '6px', fontWeight: '600' }}>{couponError}</p>}
+        {couponSuccess && <p style={{ color: 'var(--success)', fontSize: '0.75rem', marginTop: '6px', fontWeight: '600' }}>{couponSuccess}</p>}
+      </div>
+
       {/* Delivery Address */}
       <div style={{ 
         backgroundColor: 'var(--bg-card)', 
@@ -217,6 +276,14 @@ const Cart = () => {
             <span>Delivery Partner Fee</span>
             <span style={{ color: 'var(--text-main)' }}>₹{deliveryCharge}</span>
           </div>
+          
+          {appliedDiscount > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--success)', fontWeight: '600' }}>
+              <span>Promo Discount</span>
+              <span>-₹{appliedDiscount}</span>
+            </div>
+          )}
+
           <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px dashed var(--border-color)', paddingTop: '10px', marginTop: '4px', fontSize: '1rem', fontWeight: '700', color: 'var(--text-main)' }}>
             <span>Grand Total</span>
             <span>₹{totalBill}</span>
@@ -242,3 +309,4 @@ const Cart = () => {
 };
 
 export default Cart;
+

@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import { initDb } from './config/db.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import restaurantRoutes from './routes/restaurantRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import authRoutes from './routes/authRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 dotenv.config();
 
@@ -27,6 +30,9 @@ app.get('/api/health', (req, res) => {
 
 // Register restaurant routes
 app.use('/api', restaurantRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // Centralized error handler middleware
 app.use(errorHandler);

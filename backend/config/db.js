@@ -64,6 +64,7 @@ export const initDb = async () => {
   await run(`
     CREATE TABLE IF NOT EXISTS restaurants (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      owner_id INTEGER,
       name TEXT NOT NULL,
       cuisine TEXT NOT NULL,
       rating REAL DEFAULT 4.0,
@@ -127,6 +128,15 @@ export const initDb = async () => {
   if (resCount.count === 0) {
     console.log('Seeding initial restaurant and menu data...');
     
+    // Seed default restaurant owner
+    const bcrypt = await import('bcryptjs');
+    const hashedPw = await bcrypt.hash('password123', 10);
+    const ownerRes = await run(
+      'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)',
+      ['Vinay Owner', 'owner@goldenkitchen.com', hashedPw, 'restaurant']
+    );
+    const ownerId = ownerRes.id;
+
     const restaurantsData = [
       {
         name: 'The Golden Kitchen',
@@ -275,8 +285,8 @@ export const initDb = async () => {
 
     for (const res of restaurantsData) {
       const { id } = await run(
-        'INSERT INTO restaurants (name, cuisine, rating, delivery_time, cost_for_two, distance, delivery_fee, image_url, promo_text, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [res.name, res.cuisine, res.rating, res.delivery_time, res.cost_for_two, res.distance, res.delivery_fee, res.image_url, res.promo_text, res.address]
+        'INSERT INTO restaurants (owner_id, name, cuisine, rating, delivery_time, cost_for_two, distance, delivery_fee, image_url, promo_text, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [ownerId, res.name, res.cuisine, res.rating, res.delivery_time, res.cost_for_two, res.distance, res.delivery_fee, res.image_url, res.promo_text, res.address]
       );
       
       const dishes = menuData[res.name] || [];
