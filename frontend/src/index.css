@@ -1,0 +1,461 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;1,500&display=swap');
+
+:root {
+  /* Common Core Tokens */
+  --primary: #e23744;         /* Heaven Crimson Red */
+  --primary-hover: #cb202d;
+  --primary-rgb: 226, 55, 68;
+  --accent: #f4a261;          /* Soft gold/orange */
+  --accent-gold: #ffb703;     /* Star rating / premium badge */
+  --success: #249b55;         /* Zomato Veg Green */
+  --success-bg: rgba(36, 155, 85, 0.1);
+  --error: #e03f3f;           /* Non-veg Red */
+  --error-bg: rgba(224, 63, 63, 0.1);
+  
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-full: 9999px;
+  
+  --font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Playfair Display', serif;
+  
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --transition-bounce: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* Light Theme Variables (Default) */
+  --bg-app: #f4f6f8;          /* Page background */
+  --bg-container: #ffffff;    /* App shell background */
+  --bg-card: #ffffff;
+  --bg-surface: #f7f9fa;
+  --text-main: #1c1c1c;
+  --text-muted: #696969;
+  --text-sub: #828282;
+  --border-color: #ededed;
+  --border-focus: rgba(226, 55, 68, 0.3);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-header: 0 2px 10px rgba(0, 0, 0, 0.03);
+}
+
+/* Dark Theme Variables */
+[data-theme='dark'] {
+  --bg-app: #09090b;
+  --bg-container: #121214;
+  --bg-card: #1a1a1e;
+  --bg-surface: #1e1e24;
+  --text-main: #f3f4f6;
+  --text-muted: #a1a1aa;
+  --text-sub: #71717a;
+  --border-color: #26262a;
+  --border-focus: rgba(226, 55, 68, 0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.4);
+  --shadow-header: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow-x: hidden;
+  transition: background-color var(--transition-smooth), color var(--transition-smooth);
+}
+
+/* Scrollbar customizations */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-sub);
+}
+
+/* ---------------------------------------------------- */
+/* Premium Layout & Desktop Mock Frame Wrapper          */
+/* ---------------------------------------------------- */
+
+.desktop-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-app);
+  transition: background-color var(--transition-smooth);
+}
+
+/* Mobile-first centered app container */
+.app-container {
+  width: 100%;
+  max-width: 430px; /* iPhone 15 Pro Max width standard */
+  height: 100vh;
+  background-color: var(--bg-container);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  border-left: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  transition: background-color var(--transition-smooth), border-color var(--transition-smooth);
+}
+
+@media (min-width: 431px) {
+  .app-container {
+    height: 92vh;
+    border-radius: 40px;
+    border: 10px solid #1a1a1a; /* Sleek mock physical bezel */
+    box-shadow: 0 25px 60px -15px rgba(0,0,0,0.3);
+  }
+}
+
+/* Scrollable page content area */
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 74px; /* Space for bottom tab bar navigation */
+  position: relative;
+  scroll-behavior: smooth;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------------------------------------------------- */
+/* Global Components & Shimmer Skeletons                */
+/* ---------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: scale(0.97);
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+}
+.btn-secondary:hover {
+  background-color: var(--border-color);
+}
+
+/* Inputs & Form Controls */
+.input-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.input-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+.input-field {
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-container);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+.input-field:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--border-focus);
+}
+
+/* Shimmer Skeleton Animation */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--bg-surface) 25%,
+    var(--border-color) 37%,
+    var(--bg-surface) 63%
+  );
+  background-size: 400% 100%;
+  animation: loading-shimmer 1.4s ease infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Veg / Non-veg Badges */
+.diet-badge {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--success);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+.diet-badge.non-veg {
+  border-color: var(--error);
+}
+.diet-badge::before {
+  content: '';
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background-color: var(--success);
+}
+.diet-badge.non-veg::before {
+  background-color: var(--error);
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%); /* triangle icon for non-veg */
+  border-radius: 0;
+  width: 7px;
+  height: 6px;
+}
+
+/* Rating Box */
+.rating-badge {
+  background-color: var(--success);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 4px rgba(36, 155, 85, 0.2);
+}
+.rating-badge.yellow {
+  background-color: var(--accent-gold);
+  box-shadow: 0 2px 4px rgba(255, 183, 3, 0.2);
+}
+
+/* ---------------------------------------------------- */
+/* Micro-animations & Transitions                       */
+/* ---------------------------------------------------- */
+
+.scale-in {
+  animation: scaleIn 0.3s var(--transition-smooth) forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.4s var(--transition-smooth) forwards;
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease forwards;
+}
+
+@keyframes scaleIn {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.tap-effect {
+  transition: transform 0.1s ease;
+}
+.tap-effect:active {
+  transform: scale(0.95);
+}
+
+/* Shimmer list card */
+.shimmer-card {
+  height: 120px;
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+/* Splash Screen Animations */
+.fade-out-splash {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
+@keyframes splash-scale-in {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes splash-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Suggestions Box styling */
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  margin-top: 8px;
+  box-shadow: var(--shadow-md);
+  z-index: 100;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color var(--transition-fast);
+  color: var(--text-main);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: var(--bg-surface);
+}
+
+/* Horizontal scroll indicators hidden */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* ─── Restaurant Details Page ─── */
+.restaurant-details-page {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Cart pulse animation — fires when items are first added */
+@keyframes cartPulse {
+  0%   { transform: scale(0.96); }
+  55%  { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+/* Scale-in for floating cart and info expansion */
+@keyframes scaleIn {
+  from { transform: scaleY(0.92); opacity: 0; }
+  to   { transform: scaleY(1);    opacity: 1; }
+}
+.scale-in {
+  animation: scaleIn 0.22s ease-out both;
+  transform-origin: top;
+}
+
+/* Slide-up for conflict modal */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+.slide-up {
+  animation: slideUp 0.28s cubic-bezier(0.25, 0.8, 0.25, 1) both;
+}
+
+/* Veg/Non-veg badge */
+.diet-badge {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+/* Food card image zoom */
+.food-card-img {
+  transition: transform 0.35s ease;
+}
+.food-card-img:hover {
+  transform: scale(1.05);
+}
+
